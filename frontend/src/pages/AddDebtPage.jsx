@@ -7,37 +7,46 @@ function AddDebtPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    lender: "",
-    amount: "",
-    description: "",
-    date: "",
+    lender:        "",
+    amount:        "",
+    description:   "",
+    date:          "",
+    payment_type:  "lump_sum",  // 'lump_sum' or 'monthly'
+    interest_rate: "",          // % per month
+    due_date:      "",          // due date
   });
 
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError]           = useState("");
 
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
+  const hasInterest = Number(form.interest_rate) > 0;
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-    setSubmitting(true);
 
+    if (hasInterest && !form.due_date) {
+      setError("Please set a due date when interest rate is specified.");
+      return;
+    }
+
+    setSubmitting(true);
     try {
       const response = await fetch(`${API_URL}/api/debts`, {
-        method: "POST",
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body:    JSON.stringify(form),
       });
 
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message);
       }
-
       navigate("/");
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
@@ -55,6 +64,8 @@ function AddDebtPage() {
 
       <div className="form-card">
         <form onSubmit={handleSubmit}>
+
+          {/* ชื่อเจ้าหนี้ */}
           <div className="form-group">
             <label>Lender Name</label>
             <input
@@ -67,8 +78,9 @@ function AddDebtPage() {
             />
           </div>
 
+          {/* จำนวนเงิน */}
           <div className="form-group">
-            <label>Amount Borrowed (THB)</label>
+            <label>Principal Amount (THB)</label>
             <input
               type="number"
               name="amount"
@@ -80,6 +92,7 @@ function AddDebtPage() {
             />
           </div>
 
+          {/* วันที่ยืม */}
           <div className="form-group">
             <label>Borrow Date</label>
             <input
@@ -91,6 +104,58 @@ function AddDebtPage() {
             />
           </div>
 
+          {/* ประเภทการชำระ */}
+          <div className="form-group">
+            <label>Repayment Type</label>
+            <div className="type-toggle">
+              <button
+                type="button"
+                className={`type-btn ${form.payment_type === "lump_sum" ? "active" : ""}`}
+                onClick={() => setForm((p) => ({ ...p, payment_type: "lump_sum" }))}
+              >
+                One-time
+              </button>
+              <button
+                type="button"
+                className={`type-btn ${form.payment_type === "monthly" ? "active" : ""}`}
+                onClick={() => setForm((p) => ({ ...p, payment_type: "monthly" }))}
+              >
+                Monthly Installment
+              </button>
+            </div>
+          </div>
+
+          {/* ดอกเบี้ย */}
+          <div className="form-group">
+            <label>Interest Rate (% per month, 0 = no interest)</label>
+            <input
+              type="number"
+              name="interest_rate"
+              value={form.interest_rate}
+              onChange={handleChange}
+              placeholder="0"
+              min="0"
+              step="0.01"
+            />
+          </div>
+
+          {/* วันครบกำหนด — แสดงเสมอ แต่ required เมื่อมีดอกเบี้ย */}
+          <div className="form-group">
+            <label>Due Date {hasInterest && <span className="required-star">*</span>}</label>
+            <input
+              type="date"
+              name="due_date"
+              value={form.due_date}
+              onChange={handleChange}
+            />
+            {form.payment_type === "monthly" && form.date && form.due_date && (
+              <div className="field-hint">
+                {monthsBetween(form.date, form.due_date)} monthly installments
+              </div>
+            )}
+          </div>
+
+          {/* หมายเหตุ */}
           <div className="form-group">
             <label>Notes (optional)</label>
             <textarea
@@ -98,7 +163,7 @@ function AddDebtPage() {
               value={form.description}
               onChange={handleChange}
               placeholder="e.g. Car repair, Tuition fee"
-              rows={3}
+              rows={2}
             />
           </div>
 
@@ -111,6 +176,14 @@ function AddDebtPage() {
       </div>
     </div>
   );
+}
+
+// helper เอาไว้แสดงจำนวนงวดใน form
+function monthsBetween(startDate, endDate) {
+  const start = new Date(startDate);
+  const end   = new Date(endDate);
+  const m = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+  return m > 0 ? m : 0;
 }
 
 export default AddDebtPage;

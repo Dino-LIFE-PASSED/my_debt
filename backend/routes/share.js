@@ -1,15 +1,14 @@
 // ===== routes/share.js =====
-// API สำหรับหน้า share link - ใครก็เข้าดูได้ถ้ามี token (read-only)
+// API สำหรับหน้า share link - read-only, ใครก็เข้าดูได้ถ้ามี token
 
 const express = require("express");
 const supabase = require("../supabase");
+// ใช้ enrichDebt จาก debts.js เพื่อไม่ต้องเขียน calculation ซ้ำ
+const { enrichDebt } = require("./debts");
 
 const router = express.Router();
 
-// GET /api/share/:token - ดึงข้อมูลหนี้จาก share token
-// ใครก็เรียกได้โดยไม่ต้อง login แค่ต้องมี token ถูกต้อง
 router.get("/:token", async (req, res) => {
-  // หา debt ที่ตรงกับ token นี้
   const { data: debt, error } = await supabase
     .from("debts")
     .select("*")
@@ -17,29 +16,19 @@ router.get("/:token", async (req, res) => {
     .single();
 
   if (error || !debt) {
-    return res.status(404).json({ message: "ไม่พบข้อมูล หรือ link นี้ไม่ถูกต้อง" });
+    return res.status(404).json({ message: "Link not found or invalid" });
   }
 
-  // ดึงประวัติการชำระ
   const { data: payments } = await supabase
     .from("payments")
     .select("id, amount, date, note, image_url")
     .eq("debt_id", debt.id)
     .order("date", { ascending: false });
 
-  const totalPaid = (payments || []).reduce((sum, p) => sum + Number(p.amount), 0);
-  const remaining = Number(debt.amount) - totalPaid;
-
-  // ไม่ส่ง share_token กลับไป (ซ่อนไว้)
   const { share_token, ...debtData } = debt;
+  const enriched = enrichDebt(debtData, payments || []);
 
-  res.json({
-    ...debtData,
-    payments: payments || [],
-    totalPaid,
-    remaining,
-    isPaid: remaining <= 0,
-  });
+  res.json({ ...enriched, payments: payments || [] });
 });
 
 module.exports = router;

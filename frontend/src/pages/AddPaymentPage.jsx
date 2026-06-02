@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import DateInput from "../components/DateInput";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3009";
 
@@ -85,12 +86,10 @@ function AddPaymentPage() {
 
           <div className="form-group">
             <label>Payment Date</label>
-            <input
-              type="date"
-              name="date"
+            <DateInput
               value={form.date}
-              onChange={handleChange}
-              required
+              onChange={(val) => setForm((p) => ({ ...p, date: val }))}
+              placeholder="Select payment date"
             />
           </div>
 

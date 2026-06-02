@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import DateInput from "../components/DateInput";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3009";
 
@@ -95,12 +96,10 @@ function AddDebtPage() {
           {/* วันที่ยืม */}
           <div className="form-group">
             <label>Borrow Date</label>
-            <input
-              type="date"
-              name="date"
+            <DateInput
               value={form.date}
-              onChange={handleChange}
-              required
+              onChange={(val) => setForm((p) => ({ ...p, date: val }))}
+              placeholder="Select borrow date"
             />
           </div>
 
@@ -142,11 +141,10 @@ function AddDebtPage() {
           {/* วันครบกำหนด — แสดงเสมอ แต่ required เมื่อมีดอกเบี้ย */}
           <div className="form-group">
             <label>Due Date {hasInterest && <span className="required-star">*</span>}</label>
-            <input
-              type="date"
-              name="due_date"
+            <DateInput
               value={form.due_date}
-              onChange={handleChange}
+              onChange={(val) => setForm((p) => ({ ...p, due_date: val }))}
+              placeholder="Select due date"
             />
             {form.payment_type === "monthly" && form.date && form.due_date && (
               <div className="field-hint">

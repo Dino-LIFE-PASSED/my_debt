@@ -1,0 +1,26 @@
+services:
+
+  backend:
+    build: ./backend
+    ports:
+      - "3009:3009"
+    env_file:
+      - ./backend/.env
+    volumes:
+      # ผูก folder uploads บน server จริง ↔ ใน container
+      # รูปจะอยู่ที่ ./data/uploads บนเครื่อง ไม่หายตอน redeploy
+      - ./data/uploads:/app/uploads
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:3009
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes: {}

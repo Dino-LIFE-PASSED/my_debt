@@ -16,8 +16,14 @@ const app = express();
 const PORT = 3009;
 
 // --- Middleware ---
-// อนุญาตให้ Frontend (React) เรียกใช้ API ได้
-app.use(cors());
+// อนุญาตให้เฉพาะ Frontend domain เรียกใช้ API ได้
+// FRONTEND_URL ใส่ใน .env เช่น https://debt.yourdomain.com
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173", // สำหรับ local dev
+].filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins }));
 
 // ทำให้ Express อ่าน JSON จาก request body ได้
 app.use(express.json());

@@ -7,20 +7,22 @@ services:
     env_file:
       - ./backend/.env
     volumes:
-      # ผูก folder uploads บน server จริง ↔ ใน container
-      # รูปจะอยู่ที่ ./data/uploads บนเครื่อง ไม่หายตอน redeploy
-      - ./data/uploads:/app/uploads
+      # รูปภาพเก็บที่นี่บน server — ไม่หายตอน redeploy
+      - uploads_data:/app/uploads
     restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: http://localhost:3009
+        # ใส่ค่านี้ใน Dokploy Environment Variables ตอน deploy จริง
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3009}
     ports:
       - "80:80"
     depends_on:
       - backend
     restart: unless-stopped
 
-volumes: {}
+# Docker จัดการ volume ให้เอง — ข้อมูลอยู่ถาวรบน server
+volumes:
+  uploads_data:

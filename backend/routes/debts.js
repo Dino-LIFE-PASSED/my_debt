@@ -78,15 +78,18 @@ function enrichDebt(debt, payments) {
   let schedule          = [];
 
   if (hasInterest && months > 0) {
+    // แปลง annual rate → monthly rate ก่อนคำนวณ
+    const monthlyRate = rate / 12;
+
     if (debt.payment_type === "monthly") {
       // ผ่อนรายเดือน: คำนวณด้วย PMT
-      monthlyPayment    = round(calcPMT(principal, rate, months));
+      monthlyPayment    = round(calcPMT(principal, monthlyRate, months));
       totalWithInterest = round(monthlyPayment * months);
       totalInterest     = round(totalWithInterest - principal);
-      schedule          = calcSchedule(principal, rate, months, debt.date);
+      schedule          = calcSchedule(principal, monthlyRate, months, debt.date);
     } else {
-      // ทีเดียวจบ: Compound Interest
-      totalWithInterest = round(principal * Math.pow(1 + rate / 100, months));
+      // ทีเดียวจบ: Compound Interest (รายเดือน)
+      totalWithInterest = round(principal * Math.pow(1 + monthlyRate / 100, months));
       totalInterest     = round(totalWithInterest - principal);
     }
   }

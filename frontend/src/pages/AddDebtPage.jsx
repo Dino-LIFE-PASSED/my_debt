@@ -12,7 +12,7 @@ function AddDebtPage() {
     description:   "",
     date:          "",
     payment_type:  "lump_sum",  // 'lump_sum' or 'monthly'
-    interest_rate: "",          // % per month
+    interest_rate: "",          // % per year
     due_date:      "",          // due date
   });
 
@@ -127,7 +127,7 @@ function AddDebtPage() {
 
           {/* ดอกเบี้ย */}
           <div className="form-group">
-            <label>Interest Rate (% per month, 0 = no interest)</label>
+            <label>Interest Rate (% per year, 0 = no interest)</label>
             <input
               type="number"
               name="interest_rate"

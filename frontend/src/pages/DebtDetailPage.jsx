@@ -110,7 +110,7 @@ function DebtDetailPage() {
           <>
             <div className="summary-row">
               <span className="summary-row-label">Interest Rate</span>
-              <span className="summary-row-value">{debt.interest_rate}% / month</span>
+              <span className="summary-row-value">{debt.interest_rate}% / year</span>
             </div>
             <div className="summary-row">
               <span className="summary-row-label">Total Interest</span>

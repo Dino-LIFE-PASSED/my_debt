@@ -4,7 +4,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-title">
-        💸 Debt Tracker
+        <img src="/logo.png" alt="logo" style={{ height: "32px", borderRadius: "8px" }} />
       </Link>
     </nav>
   );

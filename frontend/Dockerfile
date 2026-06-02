@@ -5,10 +5,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 
-# รับค่า VITE_API_URL ตอน build (Dokploy จะส่งค่านี้ให้)
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
-
+# VITE_API_URL อ่านจาก .env.production อัตโนมัติตอน build
 RUN npm run build
 
 # Stage 2: Serve ด้วย Nginx

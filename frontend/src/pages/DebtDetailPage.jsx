@@ -214,7 +214,7 @@ function DebtDetailPage() {
             </div>
             {payment.note && <p className="payment-note">{payment.note}</p>}
             {payment.image_url && (
-              <img src={payment.image_url} alt="Payment proof" className="payment-image" />
+              <img src={`${API_URL}${payment.image_url}`} alt="Payment proof" className="payment-image" />
             )}
           </div>
         ))

@@ -4,7 +4,8 @@
 require("dotenv").config(); // โหลดค่าจากไฟล์ .env ก่อนสิ่งอื่น
 
 const express = require("express");
-const cors = require("cors");
+const cors    = require("cors");
+const path    = require("path");
 
 // นำเข้า routes ที่แยกไว้
 const debtsRouter    = require("./routes/debts");
@@ -20,6 +21,9 @@ app.use(cors());
 
 // ทำให้ Express อ่าน JSON จาก request body ได้
 app.use(express.json());
+
+// Serve รูปภาพที่อัพโหลด — เข้าถึงได้ที่ /uploads/ชื่อไฟล์.jpg
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // --- Routes ---
 // ทุก request ที่ขึ้นต้นด้วย /api/debts จะไปที่ routes/debts.js

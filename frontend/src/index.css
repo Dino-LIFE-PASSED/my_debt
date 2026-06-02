@@ -19,11 +19,6 @@
   100% { background-position: 0% 50%; }
 }
 
-@keyframes subtleGlow {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.85; }
-}
-
 :root {
   --gold-light:   #f5e07a;
   --gold-mid:     #c9a84c;
@@ -73,7 +68,7 @@ body {
     #0d0d0d 100%
   );
   background-size: 400% 400%;
-  animation: cloudFlow 10s ease infinite;
+  animation: cloudFlow 30s ease infinite;
   padding: 0 24px;
   height: 64px;
   display: flex;
@@ -161,9 +156,7 @@ body {
 .stat-value.red   { color: var(--danger); }
 .stat-value.green { color: var(--success); }
 .stat-value.blue  {
-  background: var(--gold-gradient);
-  background-size: 300% 300%;
-  animation: goldShimmer 4s ease infinite;
+  background: linear-gradient(135deg, #f5e07a, #c9a84c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -244,9 +237,7 @@ body {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #7a5520, #c9a84c, #f5e07a, #c9a84c);
-  background-size: 300% 100%;
-  animation: goldShimmer 3s ease infinite;
+  background: linear-gradient(90deg, #7a5520, #c9a84c, #f5e07a);
   border-radius: 99px;
 }
 
@@ -280,11 +271,7 @@ body {
   gap: 8px;
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg,
-    #f5e07a 0%, #c9a84c 25%, #7a5520 50%, #c9a84c 75%, #f5e07a 100%
-  );
-  background-size: 300% 300%;
-  animation: goldShimmer 4s ease infinite;
+  background: linear-gradient(135deg, #f5e07a 0%, #c9a84c 40%, #7a5520 100%);
   color: #1a1200;
   border: none;
   border-radius: var(--radius);
@@ -293,12 +280,11 @@ body {
   text-decoration: none;
   cursor: pointer;
   margin-bottom: 20px;
-  transition: transform 0.1s;
   letter-spacing: 0.3px;
-  text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+  -webkit-tap-highlight-color: transparent;
 }
 
-.add-btn:hover { transform: translateY(-1px); }
+.add-btn:active { opacity: 0.85; }
 
 /* ===== FORM ===== */
 .form-card {
@@ -326,7 +312,7 @@ body {
   padding: 12px 14px;
   border: 1.5px solid var(--dark-border);
   border-radius: var(--radius-sm);
-  font-size: 15px;
+  font-size: 16px; /* ต้อง 16px+ เพื่อป้องกัน iPhone auto-zoom */
   font-family: inherit;
   color: var(--text);
   background: #111008;
@@ -412,17 +398,13 @@ body {
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .btn-primary {
-  background: linear-gradient(135deg,
-    #f5e07a 0%, #c9a84c 30%, #7a5520 70%, #c9a84c 100%
-  );
-  background-size: 300% 300%;
-  animation: goldShimmer 4s ease infinite;
+  background: linear-gradient(135deg, #f5e07a 0%, #c9a84c 50%, #7a5520 100%);
   color: #1a1200;
   font-weight: 800;
-  text-shadow: 0 1px 1px rgba(255,255,255,0.2);
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+.btn-primary:active:not(:disabled) { opacity: 0.85; }
 
 .btn-success {
   background: #1a3d2b;
@@ -457,7 +439,7 @@ body {
     #0d0d0d 100%
   );
   background-size: 400% 400%;
-  animation: cloudFlow 8s ease infinite;
+  animation: cloudFlow 25s ease infinite;
   border-radius: var(--radius);
   padding: 24px;
   text-align: center;
@@ -480,7 +462,7 @@ body {
   margin-top: 8px;
   background: linear-gradient(135deg, #f5e07a, #c9a84c, #f5e07a);
   background-size: 300% 300%;
-  animation: goldShimmer 3s ease infinite;
+  animation: goldShimmer 20s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -661,7 +643,7 @@ body {
     #2a1e00 100%
   );
   background-size: 300% 300%;
-  animation: cloudFlow 7s ease infinite;
+  animation: cloudFlow 22s ease infinite;
   border-radius: var(--radius);
   padding: 16px 18px;
   margin-bottom: 12px;
@@ -684,8 +666,6 @@ body {
   flex-shrink: 0;
   padding: 9px 16px;
   background: linear-gradient(135deg, #f5e07a, #c9a84c, #7a5520);
-  background-size: 200% 200%;
-  animation: goldShimmer 3s ease infinite;
   color: #1a1200;
   border: none;
   border-radius: 8px;
@@ -694,11 +674,11 @@ body {
   cursor: pointer;
   font-family: inherit;
   white-space: nowrap;
-  transition: transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn-copy:hover { transform: translateY(-1px); }
-.btn-copy-done { background: var(--success) !important; animation: none !important; color: white !important; }
+.btn-copy:active { opacity: 0.85; }
+.btn-copy-done { background: var(--success) !important; color: white !important; }
 
 /* ===== MISC ===== */
 .empty-state {
@@ -768,7 +748,7 @@ body {
     #0d0d0d 100%
   );
   background-size: 400% 400%;
-  animation: cloudFlow 10s ease infinite;
+  animation: cloudFlow 30s ease infinite;
   padding: 36px 20px 28px;
   text-align: center;
   border-bottom: 1px solid #2e2a20;
@@ -782,7 +762,7 @@ body {
   letter-spacing: -0.4px;
   background: linear-gradient(135deg, #f5e07a, #c9a84c, #f5e07a);
   background-size: 300% 300%;
-  animation: goldShimmer 3s ease infinite;
+  animation: goldShimmer 20s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -809,7 +789,7 @@ body {
   padding: 12px 14px;
   border: 1.5px solid var(--dark-border);
   border-radius: var(--radius-sm);
-  font-size: 15px;
+  font-size: 16px; /* ป้องกัน iPhone auto-zoom */
   font-family: "Inter", sans-serif;
   color: var(--text);
   background: #111008;
@@ -833,7 +813,7 @@ body {
 .react-datepicker__header {
   background: linear-gradient(135deg, #1f1800, #2d2410, #1a1200) !important;
   background-size: 300% 300% !important;
-  animation: cloudFlow 6s ease infinite !important;
+  animation: cloudFlow 20s ease infinite !important;
   border-bottom: 1px solid #2e2a20 !important;
   border-radius: var(--radius) var(--radius) 0 0 !important;
   padding: 12px 0 8px !important;

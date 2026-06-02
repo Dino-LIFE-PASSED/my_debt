@@ -64,8 +64,7 @@ function DebtDetailPage() {
         <div className="amount-display-label">
           {debt.isPaid ? "Fully Paid" : "Remaining Balance"}
         </div>
-        <div className="amount-display-number"
-          style={{ color: debt.isPaid ? "var(--success)" : "var(--danger)" }}>
+        <div className={`amount-display-number ${debt.isPaid ? "green" : ""}`}>
           ฿{fmt(debt.remaining)}
         </div>
       </div>

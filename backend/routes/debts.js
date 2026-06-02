@@ -16,43 +16,43 @@ function monthsBetween(startDate, endDate) {
 }
 
 // ---------------------------------------------------------------------------
-// Helper: คำนวณยอดผ่อนต่อเดือน (PMT Formula)
-// principal   = เงินต้น
-// monthlyRate = ดอกเบี้ยต่อเดือน (%) เช่น 1.5
-// months      = จำนวนงวด
+// Helper: ทบต้นรายปี — ปีต่อปีเท่านั้น ไม่ทบต้นรายเดือน
+// principal = เงินต้น
+// annualRate = อัตราดอกเบี้ยต่อปี (%)
+// years     = จำนวนปี (เช่น 2.5)
 // ---------------------------------------------------------------------------
-function calcPMT(principal, monthlyRate, months) {
-  if (monthlyRate === 0) return principal / months;
-  const r = monthlyRate / 100;
-  return principal * r * Math.pow(1 + r, months) / (Math.pow(1 + r, months) - 1);
+function calcAnnualCompound(principal, annualRate, years) {
+  return principal * Math.pow(1 + annualRate / 100, years);
 }
 
 // ---------------------------------------------------------------------------
-// Helper: สร้างตารางผ่อนชำระ (Amortization Schedule)
+// Helper: สร้างตารางผ่อนรายเดือน (เงินต้น + ดอกเบี้ยทบต้นรายปี หารเท่าๆ กัน)
 // ---------------------------------------------------------------------------
-function calcSchedule(principal, monthlyRate, months, startDate) {
-  const r   = monthlyRate / 100;
-  const pmt = calcPMT(principal, monthlyRate, months);
-  let balance = principal;
+function calcSchedule(principal, annualRate, months, startDate) {
+  const years           = months / 12;
+  const totalWithInt    = calcAnnualCompound(principal, annualRate, years);
+  const totalInterest   = totalWithInt - principal;
+  const monthlyPayment  = round(totalWithInt / months);
+  const monthlyInterest = round(totalInterest / months);
+  const monthlyPrincipal = round(principal / months);
+
+  let balance = round(totalWithInt);
   const schedule = [];
 
   for (let i = 1; i <= months; i++) {
-    const interest      = balance * r;
-    const principalPart = pmt - interest;
-    balance -= principalPart;
+    balance = round(balance - monthlyPayment);
     if (balance < 0.01) balance = 0;
 
-    // วันครบกำหนดของแต่ละงวด
     const dueDate = new Date(startDate);
     dueDate.setMonth(dueDate.getMonth() + i);
 
     schedule.push({
       month:      i,
       due_date:   dueDate.toISOString().split("T")[0],
-      payment:    round(pmt),
-      principal:  round(principalPart),
-      interest:   round(interest),
-      balance:    round(balance),
+      payment:    monthlyPayment,
+      principal:  monthlyPrincipal,
+      interest:   monthlyInterest,
+      balance:    balance,
     });
   }
   return schedule;
@@ -78,18 +78,17 @@ function enrichDebt(debt, payments) {
   let schedule          = [];
 
   if (hasInterest && months > 0) {
-    // แปลง annual rate → monthly rate ก่อนคำนวณ
-    const monthlyRate = rate / 12;
+    const years = months / 12; // แปลงเดือน → ปี
 
     if (debt.payment_type === "monthly") {
-      // ผ่อนรายเดือน: คำนวณด้วย PMT
-      monthlyPayment    = round(calcPMT(principal, monthlyRate, months));
-      totalWithInterest = round(monthlyPayment * months);
+      // ผ่อนรายเดือน: ทบต้นรายปี แล้วหารเท่าๆ กันทุกงวด
+      totalWithInterest = round(calcAnnualCompound(principal, rate, years));
       totalInterest     = round(totalWithInterest - principal);
-      schedule          = calcSchedule(principal, monthlyRate, months, debt.date);
+      monthlyPayment    = round(totalWithInterest / months);
+      schedule          = calcSchedule(principal, rate, months, debt.date);
     } else {
-      // ทีเดียวจบ: Compound Interest (รายเดือน)
-      totalWithInterest = round(principal * Math.pow(1 + monthlyRate / 100, months));
+      // ทีเดียวจบ: ทบต้นรายปีเท่านั้น
+      totalWithInterest = round(calcAnnualCompound(principal, rate, years));
       totalInterest     = round(totalWithInterest - principal);
     }
   }
